@@ -1,65 +1,277 @@
-import Image from "next/image";
+import { RoadmapGenerator } from "@/components/ai/RoadmapGenerator";
+import { createServerClient } from "@/lib/supabase/server";
+import {
+  Sparkles,
+  ArrowRight,
+  Brain,
+  LayoutList,
+  Share2,
+  Gauge,
+  Star,
+  Zap,
+  Play,
+} from "lucide-react";
 
-export default function Home() {
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+const features = [
+  {
+    icon: Brain,
+    title: "AI-Powered",
+    description: "Describe your goal → Get a structured roadmap instantly",
+  },
+  {
+    icon: LayoutList,
+    title: "Visual Timeline",
+    description: "Interactive Gantt view with drag-and-drop milestones",
+  },
+  {
+    icon: Share2,
+    title: "Easy Sharing",
+    description: "Export to PDF or share a live link with your team",
+  },
+];
+
+const sampleMilestones = [
+  { phase: "Foundation & Architecture", week: "Wk 1–3", desc: "Set up monorepo, CI/CD, auth system, and database" },
+  { phase: "Core Product Features", week: "Wk 4–9", desc: "Task boards, real-time updates, file attachments" },
+  { phase: "Collaboration & Notifications", week: "Wk 10–13", desc: "Comments, mentions, activity feed, Slack" },
+  { phase: "Launch & Mobile App", week: "Wk 14–20", desc: "React Native app, beta testing, public launch" },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function Home() {
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <LandingPage />;
+  }
+
+  return <RoadmapGenerator />;
+}
+
+// ─── Landing ──────────────────────────────────────────────────────────────────
+
+function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+      <div className="min-h-screen bg-black-deep text-text-primary">
+        <Hero />
+        <DemoSection />
+        <FeaturesSection />
+        <CTASection />
+        <Footer />
+      </div>
+  );
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function Hero() {
+  return (
+      <section className="relative px-6 pt-24 pb-20 text-center overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-purple-primary/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-3xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full bg-purple-primary/10 border border-purple-primary/20 text-xs font-medium text-purple-light">
+            <Sparkles className="w-3.5 h-3.5" />
+            AI-Powered Roadmap Generator
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-5xl md:text-7xl font-semibold leading-tight tracking-tight mb-5">
+            Turn ideas into{" "}
+            <span className="text-gradient-purple">actionable roadmaps</span>
+            <br />
+            in seconds
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          {/* Subtext */}
+          <p className="text-base text-text-secondary max-w-xl mx-auto mb-10 leading-relaxed">
+            Describe your project — AI breaks it into phases, milestones,
+            and realistic timelines you can actually use.
           </p>
+
+          {/* CTA */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-16">
+            <a
+                href="/auth/login"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-purple text-white rounded-lg text-sm font-medium hover:shadow-lg hover:scale-105 transition-all"
+            >
+              Generate your roadmap
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+                href="#demo"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-black-surface border border-purple-primary/20 text-text-primary rounded-lg text-sm font-medium hover:border-purple-primary/40 transition-all"
+            >
+              <Play className="w-4 h-4" />
+              See demo
+            </a>
+          </div>
+
+          {/* Simple Stats */}
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-light">12k+</div>
+              <div className="text-xs text-text-muted">Roadmaps</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-light">4.9★</div>
+              <div className="text-xs text-text-muted">Rating</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-light">&lt;5s</div>
+              <div className="text-xs text-text-muted">Generation</div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+  );
+}
+
+// ─── Demo Section ────────────────────────────────────────────────────────────
+
+function DemoSection() {
+  return (
+      <section id="demo" className="px-6 py-20 bg-black-surface/20 border-t border-b border-purple-primary/10">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-semibold mb-2">See it in action</h2>
+            <p className="text-sm text-text-secondary">
+              A sample AI-generated roadmap for a SaaS product launch
+            </p>
+          </div>
+
+          {/* Preview Card */}
+          <div className="rounded-xl bg-black-surface border border-purple-primary/15 overflow-hidden">
+            {/* Prompt */}
+            <div className="px-5 py-4 border-b border-purple-primary/10 bg-purple-primary/5">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-purple-light" />
+                <span className="text-xs font-medium text-text-secondary">Your prompt</span>
+              </div>
+              <p className="text-sm text-text-secondary italic">
+                "Build a SaaS project management tool with team collaboration and a mobile app. Launch in 5 months."
+              </p>
+            </div>
+
+            {/* Generated Roadmap */}
+            <div className="px-5 py-4">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-medium text-text-secondary">Generated roadmap</span>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-purple-primary/10 text-purple-light">4 phases</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-purple-primary/10 text-purple-light">20 weeks</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {sampleMilestones.map((m, i) => (
+                    <div key={i} className="flex gap-3 py-2 border-b border-purple-primary/8 last:border-0">
+                      <div className="pt-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                          <span className="text-sm font-medium text-text-primary">{m.phase}</span>
+                          <span className="text-xs text-purple-light">{m.week}</span>
+                        </div>
+                        <p className="text-xs text-text-secondary">{m.desc}</p>
+                      </div>
+                    </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+  );
+}
+
+// ─── Features ─────────────────────────────────────────────────────────────────
+
+function FeaturesSection() {
+  return (
+      <section id="features" className="px-6 py-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-semibold mb-3">
+              Everything you need to plan faster
+            </h2>
+            <p className="text-sm text-text-secondary">
+              Simple, powerful, and built for modern teams
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {features.map((feature) => (
+                <div
+                    key={feature.title}
+                    className="group p-6 rounded-xl bg-black-surface/50 border border-purple-primary/10 hover:border-purple-primary/30 hover:scale-105 transition-all duration-300"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-purple-primary/10 flex items-center justify-center mb-4">
+                    <feature.icon className="w-5 h-5 text-purple-light" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+            ))}
+          </div>
+        </div>
+      </section>
+  );
+}
+
+// ─── CTA ──────────────────────────────────────────────────────────────────────
+
+function CTASection() {
+  return (
+      <section className="px-6 py-20">
+        <div className="max-w-2xl mx-auto">
+          <div className="relative rounded-2xl bg-gradient-to-br from-purple-primary/10 to-transparent border border-purple-primary/25 px-8 py-12 text-center overflow-hidden">
+            <div className="relative">
+              <Sparkles className="w-8 h-8 text-purple-light mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold mb-3">
+                Ready to map out your next project?
+              </h2>
+              <p className="text-sm text-text-secondary mb-6">
+                Free for individuals. No credit card required.
+              </p>
+              <a
+                  href="/auth/login"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-purple text-white rounded-lg text-sm font-medium hover:shadow-lg hover:scale-105 transition-all"
+              >
+                Start for free
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+  );
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+function Footer() {
+  return (
+      <footer className="px-6 py-6 border-t border-purple-primary/10">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3 h-3 text-purple-primary" />
+            <span>AI Roadmap Generator — 2025</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <a href="#" className="hover:text-text-secondary transition">Privacy</a>
+            <a href="#" className="hover:text-text-secondary transition">Terms</a>
+          </div>
+        </div>
+      </footer>
   );
 }
