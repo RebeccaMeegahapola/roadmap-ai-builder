@@ -7,39 +7,24 @@ import { createServerClient } from '@/lib/supabase/server'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Roadmap Generator',
-  description: 'Generate professional roadmaps with AI',
+    title: 'AI Roadmap Generator',
+    description: 'Generate professional roadmaps with AI',
 }
 
 export default async function RootLayout({
-                                           children,
+                                             children,
                                          }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+    const supabase = await createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-  return (
-      <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                            try {
-                                const darkMode = localStorage.getItem('theme') === 'dark' ||
-                                    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                                if (darkMode) {
-                                    document.documentElement.classList.add('dark');
-                                }
-                            } catch (_) {}
-                        `,
-            }}
-        />
-      </head>
-      <body className={inter.className}>
-      {user && <Navbar />}
-      {children}
-      </body>
-      </html>
-  )
+    return (
+        <html lang="en">
+            <body className={inter.className}>
+                {user && <Navbar />}
+                {children}
+            </body>
+        </html>
+    )
 }
