@@ -70,13 +70,13 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-16">
-              <button
-                  onClick={() => setShowGenerator(true)}
+              <a
+                  href={"/generator"}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-purple text-white rounded-lg text-sm font-medium hover:shadow-lg hover:scale-105 transition-all"
               >
                 Try Now - Free
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
               <a
                   href="#demo"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-black-surface border border-purple-primary/20 text-text-primary rounded-lg text-sm font-medium hover:border-purple-primary/40 transition-all"
