@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { RoadmapGenerator } from "@/components/ai/RoadmapGenerator";
 import {
   Sparkles,
   ArrowRight,
@@ -40,10 +39,6 @@ const sampleMilestones = [
 
 export default function Home() {
   const [showGenerator, setShowGenerator] = useState(false)
-
-  if (showGenerator) {
-    return <RoadmapGenerator />
-  }
 
   return (
       <div className="min-h-screen bg-black-deep text-text-primary">
