@@ -2,36 +2,21 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { usePathname } from 'next/navigation'
 import {
-    Menu, X, LayoutDashboard, GitBranch, Settings, LogOut, User,
-    Sparkles, ChevronDown, Moon, Sun, Plus, Crown
+    Menu, X, LayoutDashboard, GitBranch, Sparkles, Moon, Sun, Plus
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const [user, setUser] = useState<any>(null)
-    const [showUserMenu, setShowUserMenu] = useState(false)
     const [isDark, setIsDark] = useState(false)
-    const router = useRouter()
     const pathname = usePathname()
-    const supabase = createClient()
 
     useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
-            setUser(data.user)
-        })
         const isDarkMode = document.documentElement.classList.contains('dark')
         setIsDark(isDarkMode)
-    }, [supabase])
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut()
-        router.push('/auth/login')
-        router.refresh()
-    }
+    }, [])
 
     const toggleDarkMode = () => {
         const newIsDark = !isDark
@@ -48,7 +33,7 @@ export function Navbar() {
     const navItems = [
         { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/roadmaps', label: 'My Roadmaps', icon: GitBranch },
-        { href: '/', label: 'New Roadmaps', icon: Plus },
+        { href: '/generator', label: 'New Roadmaps', icon: Plus },
     ]
 
     const isActive = (path: string) => pathname === path
@@ -96,45 +81,6 @@ export function Navbar() {
                                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                             </button>
 
-                            {/* User menu - Desktop only */}
-                            {user && (
-                                <div className="relative hidden md:block">
-                                    <button
-                                        onClick={() => setShowUserMenu(!showUserMenu)}
-                                        className="flex items-center gap-2 p-2 transition"
-                                    >
-                                        <div className="w-8 h-8 rounded-full bg-gradient-purple flex items-center justify-center">
-                                            <User className="w-4 h-4 text-white" />
-                                        </div>
-                                        <ChevronDown className="w-4 h-4 text-text-secondary" />
-                                    </button>
-
-                                    <AnimatePresence>
-                                        {showUserMenu && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: -10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -10 }}
-                                                className="absolute right-0 mt-2 w-60 rounded-xl bg-black-surface border border-purple-primary/20 shadow-xl overflow-hidden"
-                                            >
-                                                <div className="px-5 py-3 border-b border-purple-primary/20">
-                                                    <p className="text-sm font-medium text-text-primary">{user.email}</p>
-                                                </div>
-                                                <div className="p-2">
-                                                    <button
-                                                        onClick={handleLogout}
-                                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg transition"
-                                                    >
-                                                        <LogOut className="w-4 h-4" />
-                                                        Sign Out
-                                                    </button>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            )}
-
                             {/* Hamburger Menu Button - Mobile only */}
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
@@ -171,22 +117,6 @@ export function Navbar() {
                                         {item.label}
                                     </Link>
                                 ))}
-                                {/* Mobile user email */}
-                                {user && (
-                                    <div className="px-4 py-3">
-                                        <p className="text-sm text-text-secondary truncate">{user.email}</p>
-                                    </div>
-                                )}
-                                <button
-                                    onClick={() => {
-                                        setIsOpen(false)
-                                        handleLogout()
-                                    }}
-                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition"
-                                >
-                                    <LogOut className="w-4 h-4" />
-                                    Sign Out
-                                </button>
                             </div>
                         </motion.div>
                     )}
