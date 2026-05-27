@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import {
@@ -17,6 +16,7 @@ import {
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Navbar } from "@/components/navigation/Navbar";
+import { supabase } from '@/lib/supabase/client'
 
 interface Roadmap {
     id: string
@@ -30,7 +30,6 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
-    const supabase = createClient()
 
     useEffect(() => {
         async function fetchRoadmaps() {
@@ -58,7 +57,7 @@ export default function DashboardPage() {
         }
 
         fetchRoadmaps()
-    }, [supabase])
+    }, [])
 
     const stats = [
         { label: 'Total Roadmaps', value: roadmaps.length, icon: FolderOpen },
