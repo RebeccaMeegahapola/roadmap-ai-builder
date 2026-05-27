@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Navbar } from "@/components/navigation/Navbar";
+import { Navbar } from "@/components/navigation/Navbar"
 import { supabase } from '@/lib/supabase/client'
 
 interface Roadmap {
@@ -34,8 +34,6 @@ export default function DashboardPage() {
     useEffect(() => {
         async function fetchRoadmaps() {
             try {
-                console.log('Fetching roadmaps...')
-
                 const { data, error } = await supabase
                     .from('roadmaps')
                     .select('*')
@@ -43,13 +41,12 @@ export default function DashboardPage() {
                     .limit(20)
 
                 if (error) {
-                    console.error('Supabase error:', error)
-                    setError(error.message)
-                } else {
-                    setRoadmaps(data || [])
+                    throw error
                 }
+
+                setRoadmaps((data || []) as Roadmap[])
             } catch (err: any) {
-                console.error('Fetch exception:', err)
+                console.error('Fetch error:', err)
                 setError(err.message)
             } finally {
                 setLoading(false)
@@ -89,7 +86,7 @@ export default function DashboardPage() {
                             <Sparkles className="w-8 h-8 text-red-400" />
                         </div>
                         <h3 className="text-lg font-semibold text-text-primary mb-2">Connection Issue</h3>
-                        <p className="text-text-secondary mb-4">Unable to load roadmaps. Please refresh.</p>
+                        <p className="text-text-secondary mb-4">{error}</p>
                         <Button onClick={() => window.location.reload()} variant="primary" size="sm">
                             Refresh Page
                             <ArrowRight className="w-4 h-4" />

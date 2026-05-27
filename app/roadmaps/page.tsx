@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import {
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Navbar } from '@/components/navigation/Navbar'
+import { supabase } from '@/lib/supabase/client'
 
 interface Roadmap {
     id: string
@@ -28,7 +28,6 @@ export default function RoadmapsPage() {
     const [roadmaps, setRoadmaps] = useState<Roadmap[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const supabase = createClient()
 
     useEffect(() => {
         async function fetchRoadmaps() {
