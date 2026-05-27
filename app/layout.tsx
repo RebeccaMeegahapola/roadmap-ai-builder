@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Navbar } from '@/components/navigation/Navbar'
-import { createServerClient } from '@/lib/supabase/server'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,13 +14,9 @@ export default async function RootLayout({
                                          }: {
     children: React.ReactNode
 }) {
-    const supabase = await createServerClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
     return (
         <html lang="en">
             <body className={inter.className}>
-                {user && <Navbar />}
                 {children}
             </body>
         </html>
