@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import {
-    GitBranch,
     Plus,
     TrendingUp,
     Clock,
@@ -42,21 +41,17 @@ export default function DashboardPage() {
                     .from('roadmaps')
                     .select('*')
                     .order('created_at', { ascending: false })
-
-                console.log('Supabase response:', { data, error })
+                    .limit(20)
 
                 if (error) {
                     console.error('Supabase error:', error)
                     setError(error.message)
-                    setRoadmaps([])
                 } else {
-                    console.log(`Found ${data?.length || 0} roadmaps`)
                     setRoadmaps(data || [])
                 }
             } catch (err: any) {
                 console.error('Fetch exception:', err)
                 setError(err.message)
-                setRoadmaps([])
             } finally {
                 setLoading(false)
             }
@@ -94,10 +89,10 @@ export default function DashboardPage() {
                         <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-red-400" />
                         </div>
-                        <h3 className="text-lg font-semibold text-text-primary mb-2">Error Loading Data</h3>
-                        <p className="text-text-secondary mb-4">{error}</p>
+                        <h3 className="text-lg font-semibold text-text-primary mb-2">Connection Issue</h3>
+                        <p className="text-text-secondary mb-4">Unable to load roadmaps. Please refresh.</p>
                         <Button onClick={() => window.location.reload()} variant="primary" size="sm">
-                            Retry
+                            Refresh Page
                             <ArrowRight className="w-4 h-4" />
                         </Button>
                     </Card>
@@ -170,7 +165,7 @@ export default function DashboardPage() {
                         </Card>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {roadmaps.slice(0, 12).map((roadmap, idx) => (
+                            {roadmaps.map((roadmap, idx) => (
                                 <motion.div
                                     key={roadmap.id}
                                     initial={{ opacity: 0, y: 20 }}
