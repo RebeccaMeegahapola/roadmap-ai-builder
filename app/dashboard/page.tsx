@@ -29,19 +29,37 @@ interface Roadmap {
 export default function DashboardPage() {
     const [roadmaps, setRoadmaps] = useState<Roadmap[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const supabase = createClient()
 
     useEffect(() => {
         async function fetchRoadmaps() {
-            // Remove auth check - just fetch all roadmaps or use a demo user
-            const { data } = await supabase
-                .from('roadmaps')
-                .select('*')
-                .order('created_at', { ascending: false })
+            try {
+                console.log('Fetching roadmaps...')
 
-            setRoadmaps(data || [])
-            setLoading(false)
+                const { data, error } = await supabase
+                    .from('roadmaps')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+
+                console.log('Supabase response:', { data, error })
+
+                if (error) {
+                    console.error('Supabase error:', error)
+                    setError(error.message)
+                    setRoadmaps([])
+                } else {
+                    console.log(`Found ${data?.length || 0} roadmaps`)
+                    setRoadmaps(data || [])
+                }
+            } catch (err: any) {
+                console.error('Fetch exception:', err)
+                setError(err.message)
+                setRoadmaps([])
+            } finally {
+                setLoading(false)
+            }
         }
 
         fetchRoadmaps()
@@ -67,17 +85,36 @@ export default function DashboardPage() {
         )
     }
 
+    if (error) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen bg-black-deep flex items-center justify-center">
+                    <Card className="text-center p-8 max-w-md">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Sparkles className="w-8 h-8 text-red-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-text-primary mb-2">Error Loading Data</h3>
+                        <p className="text-text-secondary mb-4">{error}</p>
+                        <Button onClick={() => window.location.reload()} variant="primary" size="sm">
+                            Retry
+                            <ArrowRight className="w-4 h-4" />
+                        </Button>
+                    </Card>
+                </div>
+            </>
+        )
+    }
+
     return (
         <>
             <Navbar />
             <div className="min-h-screen bg-black-deep">
-                {/* Subtle Background Glow */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-primary/8 rounded-full blur-3xl" />
                 </div>
 
                 <div className="relative max-w-7xl mx-auto px-4 py-12">
-                    {/* Header with Button */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
                         <div>
                             <h1 className="text-3xl font-bold text-text-primary mb-1">Dashboard</h1>
@@ -94,7 +131,6 @@ export default function DashboardPage() {
                         </Button>
                     </div>
 
-                    {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         {stats.map((stat, idx) => (
                             <Card key={idx} className="hover:border-purple-primary/30 transition-all duration-300">
@@ -111,7 +147,6 @@ export default function DashboardPage() {
                         ))}
                     </div>
 
-                    {/* Roadmaps List */}
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <h2 className="text-xl font-semibold text-text-primary">Your Roadmaps</h2>
@@ -135,7 +170,7 @@ export default function DashboardPage() {
                         </Card>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {roadmaps.map((roadmap, idx) => (
+                            {roadmaps.slice(0, 12).map((roadmap, idx) => (
                                 <motion.div
                                     key={roadmap.id}
                                     initial={{ opacity: 0, y: 20 }}
