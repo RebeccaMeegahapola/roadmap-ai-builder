@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { Save, ArrowLeft, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import {Navbar} from "@/components/navigation/Navbar";
+import { Navbar } from "@/components/navigation/Navbar"
 
 export default function EditRoadmapPage() {
     const params = useParams()
@@ -16,7 +16,6 @@ export default function EditRoadmapPage() {
     const [description, setDescription] = useState('')
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const supabase = createClient()
 
     useEffect(() => {
         async function fetchRoadmap() {
@@ -34,7 +33,7 @@ export default function EditRoadmapPage() {
         }
 
         fetchRoadmap()
-    }, [params.id, supabase])
+    }, [params.id])
 
     const handleSave = async () => {
         setSaving(true)
@@ -51,12 +50,15 @@ export default function EditRoadmapPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black-deep flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-text-secondary">Loading...</p>
+            <>
+                <Navbar />
+                <div className="min-h-screen bg-black-deep flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                        <p className="text-text-secondary">Loading...</p>
+                    </div>
                 </div>
-            </div>
+            </>
         )
     }
 
@@ -66,8 +68,7 @@ export default function EditRoadmapPage() {
             <div className="min-h-screen bg-black-deep">
                 {/* Subtle Background Glow */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-primary/8 rounded-full blur-3xl"/>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-primary/8 rounded-full blur-3xl" />
                 </div>
 
                 <div className="relative max-w-3xl mx-auto px-4 py-12">
@@ -77,7 +78,7 @@ export default function EditRoadmapPage() {
                             href={`/roadmap/${params.id}`}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black-surface/50 border border-purple-primary/20 text-text-secondary hover:text-text-primary hover:border-purple-primary/40 hover:bg-purple-primary/5 transition-all duration-200 group"
                         >
-                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform"/>
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             <span className="text-sm font-medium">Back to Roadmap</span>
                         </Link>
                     </div>
@@ -86,9 +87,8 @@ export default function EditRoadmapPage() {
                     <Card className="overflow-hidden">
                         <div className="p-8">
                             <div className="flex items-center gap-3 mb-6">
-                                <div
-                                    className="w-10 h-10 bg-gradient-purple rounded-xl flex items-center justify-center">
-                                    <Sparkles className="w-5 h-5 text-white"/>
+                                <div className="w-10 h-10 bg-gradient-purple rounded-xl flex items-center justify-center">
+                                    <Sparkles className="w-5 h-5 text-white" />
                                 </div>
                                 <h1 className="text-2xl font-bold text-text-primary">Edit Roadmap</h1>
                             </div>
@@ -129,7 +129,7 @@ export default function EditRoadmapPage() {
                                     variant="primary"
                                     size="lg"
                                     loading={saving}
-                                    icon={<Save className="w-4 h-4"/>}
+                                    icon={<Save className="w-4 h-4" />}
                                     className="w-full"
                                 >
                                     {saving ? 'Saving...' : 'Save Changes'}
@@ -140,6 +140,5 @@ export default function EditRoadmapPage() {
                 </div>
             </div>
         </>
-
     )
 }
